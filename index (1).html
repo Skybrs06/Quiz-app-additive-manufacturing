@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .question {
+            margin: 20px 0;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Online Quiz</h1>
+        <div id="quiz-container">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+        <button class="submit-btn" onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+          
+            {
+              question: "Which parameter is the most critical for precision in additive manufacturing processes?",
+              options: ["Layer thickness", "Material hardness", "Thermal conductivity", "Part size", "Type of support structures"],
+              correct: 0
+              
+            },
+
+            {
+              question: "What is the main characteristic of photopolymer resins used in SLA?",
+              options: ["Heat resistance", "Hardening when exposed to UV light", "No need for sintering", "Compatibility with metal parts", "Low cost"],
+              correct: 1,
+            },
+{
+    question: "Which factor affects the success of removing support structures?",
+    options: ["The hardness of the support material", "Surface finishing process of the part", "The design of the connection points", "The energy type used during production", "Printing time of the supports"],
+    correct: 2
+},
+{
+    question: "Which additive manufacturing method is most commonly used for biomedical implants?",
+    options: ["Stereolithography (SLA)", "Electron Beam Melting (EBM)", "Binder Jetting", "Fused Deposition Modeling (FDM)", "Selective Laser Sintering (SLS)"],
+    correct: 1
+},
+{
+    question: "What is the role of STL files in the manufacturing process?",
+    options: ["Converting 3D models into triangular meshes for slicing", "Enhancing mechanical properties of materials", "Enabling color gradients in the part", "Reducing the need for layer bonding", "Minimizing printing errors"],
+    correct: 0
+},
+{
+    question: "In powder bed fusion (PBF) methods, which parameter affects the main challenge of 'powder flowability'?",
+    options: ["Particle size distribution of the powder", "Sintering temperature", "Geometry of the support structures", "Layer sequencing speed", "Nozzle diameter of the printer"],
+    correct: 0
+},
+{
+    question: "What is an advantage of the 'Direct Energy Deposition' (DED) method?",
+    options: ["Fast production process", "Combining different materials", "Low energy consumption", "High surface quality", "No need for sintering"],
+    correct: 1
+},
+{
+    question: "When do 'thermal stresses' occur in additive manufacturing processes?",
+    options: ["During rapid cooling and solidification", "When printing with high resolution", "When using filament instead of powder", "When printing thick layers", "During UV curing"],
+    correct: 0
+},
+{
+    question: "What is the main difference between Electron Beam Melting (EBM) and laser-based fusion techniques?",
+    options: ["EBM operates in a vacuum environment", "Lasers are used for polymers instead of metals", "EBM increases layer thickness", "Lasers consume less energy", "EBM does not require support structures"],
+    correct: 0
+},
+{
+    question: "What does 'consolidation,' a design advantage of additive manufacturing, refer to?",
+    options: ["Producing multiple parts as a single structure", "Reducing material waste", "Speeding up the production process", "Lower-cost material supply", "Improved surface quality"],
+    correct: 0
+},
+{ 
+  question: "Which of the following is true about Laminated Object Manufacturing (LOM)?", 
+  options: [
+    "LOM creates layers using adhesive-coated paper.",
+    "In LOM, support material is completely melted by lasers.",
+    "LOM uses metal powders to bond layers.",
+    "LOM works exclusively with plastic materials.",
+    "LOM uses mechanical knives instead of laser cutting."
+  ], 
+  correct: 0 
+},
+
+{ 
+  question: "What is the fundamental difference between form-then-bond and bond-then-form processes?", 
+  options: [
+    "Bond-then-form consumes less energy.",
+    "Form-then-bond is more suitable for creating internal features.",
+    "Bond-then-form works only with non-metallic materials.",
+    "Form-then-bond is exclusively used for manual operations.",
+    "Bond-then-form processes bond layers before cutting them."
+  ], 
+  correct: 1 
+},
+
+{ 
+  question: "Which of the following is incorrect about Ultrasonic Consolidation (UC)?", 
+  options: [
+    "UC bonds layers using ultrasonic vibrations.",
+    "UC can create metal structures at low temperatures.",
+    "UC enables the creation of complex internal geometries.",
+    "UC is used exclusively for non-metallic materials.",
+    "UC optimizes Layer Welding Density (LWD)."
+  ], 
+  correct: 3 
+},
+
+{ 
+  question: "Which materials are typically used in an LOM system?", 
+  options: [
+    "Ceramic-filled tapes",
+    "Paper and polymer sheets",
+    "Metal powders",
+    "Carbon fiber",
+    "Composite resins"
+  ], 
+  correct: 1 
+},
+
+{ 
+  question: "What factor affects energy input during an Ultrasonic Consolidation (UC) process?", 
+  options: [
+    "Material thickness",
+    "Laser power",
+    "Ultrasonic vibration frequency",
+    "Surface hardness of the sonotrode",
+    "Temperature variations"
+  ], 
+  correct: 2 
+},
+
+{ 
+  question: "What is an advantage of sheet lamination methods?", 
+  options: [
+    "High mechanical strength between layers",
+    "Rapid production and low cost",
+    "Automatic support structures for all geometries",
+    "Uniform material properties",
+    "High precision for small features"
+  ], 
+  correct: 1 
+},
+
+{ 
+  question: "What is the most common defect leading to weak bonding in a UC process?", 
+  options: [
+    "Thermal cracking",
+    "Misaligned layers",
+    "Material melting",
+    "Insufficient ultrasonic vibrations",
+    "Unoxidized voids between layers"
+  ], 
+  correct: 4 
+},
+
+{ 
+  question: "Which of the following is true about photopolymerization processes?", 
+  options: [
+    "All photopolymerization systems only use UV light.",
+    "Two-photon photopolymerization does not require recoating.",
+    "The mask projection method provides low resolution.",
+    "Photopolymerization is only suitable for ceramic materials.",
+    "Photoinitiators can initiate only one type of polymerization reaction."
+  ], 
+  correct: 1 
+},
+
+{ 
+  question: "What is one key advantage of extrusion-based systems?", 
+  options: [
+    "They eliminate the need for material cooling.",
+    "They do not require temperature control.",
+    "They can only work with biological materials.",
+    "They allow support structures for complex geometries.",
+    "They only function on flat surfaces."
+  ], 
+  correct: 3 
+},
+
+{ 
+  question: "What is an advantage of the liquid-phase sintering mechanism in Powder Bed Fusion (PBF) processes?", 
+  options: [
+    "It does not require direct melting of high-temperature particles.",
+    "It completely eliminates porosity in final parts.",
+    "It enables precise manipulation of part density.",
+    "It requires lower energy compared to solid-state sintering.",
+    "It works best in oxygen-free environments."
+  ], 
+  correct: 0 
+},
+[
+  {
+    question: "How does Additive Manufacturing (AM) technology differ from traditional machining technologies?",
+    options: [
+      "By building material layer by layer",
+      "By shaping material through cutting",
+      "By being used only for prototyping",
+      "By involving sheet metal bending processes",
+      "By not having a fast production time"
+    ],
+    correct: 0
+  },
+  {
+    question: "What advancements has ink-jet printing technology enabled in additive manufacturing?",
+    options: [
+      "Low-cost and high-resolution production",
+      "Print heads capable of operating at high temperatures",
+      "Printing binders for powder systems",
+      "Processing materials with varying colors and viscosities",
+      "All of the above"
+    ],
+    correct: 4
+  },
+  {
+    question: "What advantage stands out in the future development of Additive Manufacturing (AM)?",
+    options: [
+      "Designing parts based on their function rather than the manufacturing process",
+      "Limiting part production to prototyping only",
+      "Focusing on mass production instead of geometric flexibility",
+      "Reduction in material diversity",
+      "Extension of production time"
+    ],
+    correct: 0
+  },
+  {
+    question: "Which of the following statements about powder bed additive manufacturing processes is correct?",
+    options: [
+      "Support structures are required.",
+      "ZCorp systems can produce colored parts using colored binder material.",
+      "In SLS processes, recycling the powder does not affect material properties.",
+      "Variations in powder density do not affect the quality of the final part.",
+      "VRML format is not suitable for use in powder bed processes."
+    ],
+    correct: 1
+  },
+  {
+    question: "In the Stereolithography (SL) process, which of the following represents the correct sequence of steps in part fabrication?",
+    options: [
+      "Creation of the STL file → Specification of support structures and setting machine parameters → Slicing the STL model and translating it into machine language → Solidifying layers using a UV laser → Cleaning, curing, and finishing the part",
+      "Creation of the STL file → Slicing the STL model and translating it into machine language → Specification of support structures and setting machine parameters → Solidifying layers using a UV laser → Cleaning, curing, and finishing the part",
+      "Specification of support structures and setting machine parameters → Creation of the STL file → Slicing the STL model and translating it into machine language → Solidifying layers using a UV laser → Cleaning, curing, and finishing the part",
+      "Slicing the STL model and translating it into machine language → Creation of the STL file → Specification of support structures and setting machine parameters → Solidifying layers using a UV laser → Cleaning, curing, and finishing the part",
+      "Creation of the STL file → Solidifying layers using a UV laser → Slicing the STL model and translating it into machine language → Specification of support structures and setting machine parameters → Cleaning, curing, and finishing the part"
+    ],
+    correct: 0
+  },
+  
+  {
+    question: "Such settings like the material constraints, energy source, layer thickness, timings, etc. Which AM process step are directly related to the settings like above?",
+    options: [
+      "CAD",
+      "Conversion to STL",
+      "Machine Setup",
+      "Removal",
+      "Post-processing"
+    ],
+    correct: 2
+  },
+  {
+    question: "What technology is required to convert a design into something that can be used by AM machines?",
+    options: [
+      "Robotics",
+      "Computer Aided Design (CAD)",
+      "Solid Panel Systems",
+      "Sheet Metal Working",
+      "Laser Applications"
+    ],
+    correct: 1
+  },
+  {
+    question: "Which of the following is one of the last operations in AM?",
+    options: [
+      "Transfer to AM machine",
+      "Removal of supports",
+      "Conversion to STL",
+      "Creation of CAD file.",
+      "Machine setup"
+    ],
+    correct: 1
+  },
+  {
+    question: "What is the primary disadvantage of Vat photopolymerization for additive manufacturing?",
+    options: [
+      "Limited material variety",
+      "High resolution and sensitivity",
+      "Working with UV curable resins",
+      "Production speed",
+      "Complexity Manufacturability of geometries"
+    ],
+    correct: 0
+  },
+  {
+    question: "Which of the following is not a negative feature for the Powder Bed Fusion method?",
+    options: [
+      "Certain amount of distortion and warping in the part",
+      "Long production time",
+      "Low surface quality, compared to liquid-based processes",
+      "Need for support",
+      "Narrow material selection range"
+    ],
+    correct: 4
+  },
+  {
+    question: "Which of the following would be a correct definition for Extrusion-based systems?",
+    options: [
+      "The material is melted with a nozzle and formed in layers",
+      "It is combined in the form of powders.",
+      "The material is solidified by being supported with UV rays.",
+      "The liquid material is deposited in the form of droplets.",
+      "The composite sheet is cut and combined in layers"
+    ],
+    correct: 0
+  },
+  {
+    question: "Which of the following expression is a suitable for the Binder jetting method?",
+    options: [
+      "The material is hardened with UV rays",
+      "The liquid material is combined in the form of droplets.",
+      "Metal and composite sheets are cut and combined in layers.",
+      "It works by spraying a binder material onto a powder bed.",
+      "The material is melted through a nozzle and deposited layer by layer."
+    ],
+    correct: 3
+  },
+  {
+    question: "Which of the following production methods generally does not require a support structure?",
+    options: [
+      "Extrusion Based Systems",
+      "Directed Energy Deposition",
+      "Material Jetting",
+      "Binder Jetting",
+      "Vat Photopolymerization"
+    ],
+    correct: 3
+  },
+  {
+    question: "Which of the following types of production usually uses a metal material?",
+    options: [
+      "Vat Photopolymerization",
+      "Directed Energy Deposition",
+      "Material jetting",
+      "Binder Jetting",
+      "All of them"
+    ],
+    correct: 1
+  },
+  {
+    question: "Which of the following materials is used for sheet in the Sheet Lamination method?",
+    options: [
+      "Ceramic",
+      "Wood",
+      "Glass",
+      "Metal",
+      "none of them"
+    ],
+    correct: 3
+  },
+  {
+    question: "Which format is used in additive manufacturing?",
+    options: [
+      "DOC",
+      "PDF",
+      "SLD.PART",
+      "txt",
+      "STL"
+    ],
+    correct: 4
+  },
+  {
+    question: "Which material can be used with Fused Filament Fabrication?",
+    options: [
+      "ABS (Acrylonitrile butadiene styrene)",
+      "Nicel",
+      "Alüminyum",
+      "Steel",
+      "Gold"
+    ],
+    correct: 0
+  },
+  {
+    question: "Which additive manufacturing method can we use to repair a turbine panel with surface damage?",
+    options: [
+      "Fused Filament Fabrication",
+      "Directed Energy Deposition",
+      "Digital Light Process",
+      "Laser Sintering",
+      "Sheet Lamination"
+    ],
+    correct: 1
+  },
+  {
+    question: "Which is not a Powder Bed Fusion method?",
+    options: [
+      "Selective Laser Sintering",
+      "Electron Beam Melting",
+      "Digital Light Process",
+      "Laser Sintering",
+      "Selective heat sintering"
+    ],
+    correct: 2
+  },
+  {
+    question: "Which of the following steps is incorrect in Binder Jetting Technology?",
+    options: [
+      "Spreading the powder layer",
+      "Binder spraying",
+      "Direct use of the part without thermal sintering",
+      "Baking to harden the part",
+      "Removal of support structures"
+    ],
+    correct: 2
+  },
+  {
+    question: "What is a key characteristic of the Direct Write process in additive manufacturing?",
+    options: [
+      "Material is deposited in a powder bed and fused with a laser",
+      "Material is directly written or deposited onto a substrate without a mold",
+      "Layers are formed by laminating pre-cut sheets",
+      "Objects are built by curing liquid resin with UV light",
+      "Metal wires are melted and shaped using electric arcs"
+    ],
+    correct: 1
+  },
+  {
+    question: "Which of the following best describes the Sheet Lamination process in additive manufacturing?",
+    options: [
+      "Melting metal powder using a laser to create layers",
+      "Extruding thermoplastic material through a heated nozzle",
+      "Bonding layers of sheet material using adhesive or ultrasonic welding",
+      "Sintering metal parts in a high-temperature furnace",
+      "Injecting liquid resin into a mold for curing"
+    ],
+    correct: 2
+  },
+  {
+    question: "What is the main difference between Digital Light Synthesis (DLS) and Stereolithography (SLA) in additive manufacturing?",
+    options: [
+      "The type of materials they can process",
+      "The method used to cure photopolymer resin",
+      "The ability to create metal parts",
+      "The need for support structures during printing",
+      "The final surface finish quality of the printed parts"
+    ],
+    correct: 1
+  },
+  {
+    question: "In which additive manufacturing process is support structure not required?",
+    options: [
+      "Fused Deposition Modeling (FDM)",
+      "Stereolithography (SLA)",
+      "Selective Laser Sintering (SLS)",
+      "Digital Light Processing (DLP)",
+      "Binder Jetting"
+    ],
+    correct: 4
+  },
+  
+  {
+    question: "Which type of material is commonly used in the sheet lamination process?",
+    options: [
+      "Thermoplastic filaments",
+      "Ceramic powders",
+      "Pre-formed metal or composite sheets",
+      "Liquid resins",
+      "Glass particles"
+    ],
+    correct: 2
+  },
+  
+  {
+      question: "Which of the following statements about the STL (Standard Tessellation Language) file format is correct?",
+      options: [
+        "It is a file format that only contains color information.",
+        "It is used to define the surface geometry of a 3D model.",
+        "It is not used in additive manufacturing technologies.",
+        "It is a 2D format composed of vector drawings.",
+        "It provides detailed information about the internal structure of a 3D model."
+      ],
+      correct: 1
+  },
+  {
+      question: "What is the key difference between the Mask Projection Approach and the Vector Scan Approach in photopolymerization?",
+      options: [
+        "The Vector Scan Approach uses a mask to cure the entire layer at once, while the Mask Projection Approach uses a laser to trace the design.",
+        "The Mask Projection Approach cures one layer at a time using a projected image, while the Vector Scan Approach uses a laser to selectively cure specific areas.",
+        "The Mask Projection Approach is slower but more accurate than the Vector Scan Approach.",
+        "The Vector Scan Approach can only be used for transparent materials, while the Mask Projection Approach works for all materials.",
+        "Both approaches function identically but differ in the types of photopolymers used."
+      ],
+      correct: 1
+    },
+    {
+      question: "In the powder bed fusion process, which of the following are necessary characteristics of the particles to ensure proper handling in the delivery system?",
+      options: [
+        "I. The particles should have a consistent size distribution.\nII. The particles should exhibit good flowability.\nIII. The particles should have low reactivity to prevent unwanted reactions.\nIV. The particles should be free of moisture.\nV. The particles should minimize the risk of becoming airborne during handling.",
+        "I, II, and III",
+        "I, II, and IV",
+        "I, II, III, and IV",
+        "I, II, III, IV, and V",
+        "II, III, IV, and V"
+      ],
+      correct: 3
+    },
+    {
+      question: "In extrusion-based systems (e.g., Fused Deposition Modeling - FDM), the extrusion process depends on which of the following factors?",
+      options: [
+        "I. The temperature of the extrusion nozzle.\nII. The feed rate of the filament.\nIII. The speed of the nozzle movement.\nIV. The type and viscosity of the material being extruded.\nV. The diameter of the nozzle opening.",
+        "I, II, and III",
+        "I, II, and IV",
+        "I, II, III, and IV",
+        "I, II, III, IV, and V",
+        "II, III, IV, and V"
+      ],
+      correct: 3
+    },
+    {
+      question: "Compared to other additive manufacturing methods, which of the following is an advantage of material jetting and binder jetting processes?",
+      options: [
+        "They do not require post-processing for final part quality.",
+        "They offer the highest mechanical strength compared to all other methods.",
+        "They allow for multi-material and full-color printing capabilities.",
+        "They are the fastest methods for producing metal parts.",
+        "They require minimal maintenance compared to extrusion-based systems."
+      ],
+      correct: 2
+    },
+    {
+      question: "In sheet lamination processes, the \"bond-then-form\" (BtF) and \"form-then-bond\" (FtB) approaches have distinct characteristics and applications. Which of the following statements about these approaches is INCORRECT?",
+      options: [
+        "The \"bond-then-form\" approach bonds all sheets into a solid stack first and then uses subtractive methods like cutting or milling to shape the part.",
+        "The \"bond-then-form\" approach generally exhibits little shrinkage, residual stress, and distortion problems, making it suitable for high-precision parts.",
+        "The \"form-then-bond\" approach enables the creation of internal features and channels by cutting individual layers before bonding, a capability that is nearly impossible in the \"bond-then-form\" approach.",
+        "The \"bond-then-form\" approach is ideal for applications requiring internal cavities or channels, as it simplifies their fabrication compared to the \"form-then-bond\" approach.",
+        "The \"form-then-bond\" approach is more popular for ceramics and metals because it allows precise cutting and bonding without excessive thermal or mechanical stress."
+      ],
+      correct: 3
+    },
+    {
+      question: "Directed Energy Deposition (DED) and Powder Bed Fusion (PBF) are both additive manufacturing processes that use powders as raw material. Which of the following statements highlights a key difference between these two processes?",
+      options: [
+        "DED can be used to repair existing components or add material to an existing part, while PBF is primarily used for building new parts from scratch.",
+        "PBF is more suitable for large-scale parts because of its ability to work without additional material handling systems, unlike DED.",
+        "DED processes are limited to polymeric materials, whereas PBF can work with metals, ceramics, and polymers.",
+        "In DED, powders are pre-deposited onto a bed and selectively melted, whereas in PBF, the material is directly deposited into the build area and simultaneously melted.",
+        "PBF provides better material density and surface finish compared to DED due to its layer-by-layer powder spreading and precision control."
+      ],
+      correct: 0
+    },
+    {
+      question: "Which additive manufacturing method is most suitable for fabricating electronic circuits, antennas, and sensors directly onto various substrates without the need for masks or molds?",
+      options: [
+        "Powder Bed Fusion (PBF)",
+        "Directed Energy Deposition (DED)",
+        "Direct Write Technologies",
+        "Extrusion-Based Systems",
+        "Binder Jetting"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following motivations are associated with Design for Additive Manufacturing (DfAM)?",
+      options: [
+        "I. Reducing material waste compared to traditional subtractive manufacturing methods.\nII. Enabling the production of complex geometries, such as lattice structures, that are difficult or impossible to achieve with conventional methods.\nIII. Customizing designs to meet specific user or application requirements.\nIV. Reducing the number of assembly steps by integrating multiple components into a single part.\nV. Improving sustainability by optimizing material usage and energy efficiency in manufacturing.",
+        "I, II, and IV",
+        "I, III, and IV",
+        "II, IV, and V",
+        "I, II, III, and IV",
+        "I, II, III, IV, and V"
+      ],
+      correct: 4
+    },
+    {
+      question: "Why is the ability to use multiple materials in additive manufacturing machinery advantageous?",
+      options: [
+        "It allows for the creation of components with varying material properties, such as stiffness and flexibility, in a single build.",
+        "It reduces the overall manufacturing cost by combining low-cost and high-performance materials in different regions of the part.",
+        "It enables the integration of functional elements, such as conductive and insulating materials, in electronic applications.",
+        "It supports the production of parts with improved performance by tailoring material composition for specific loads or conditions.",
+        "All of the above."
+      ],
+      correct: 4
+    },
+    {
+      question: "Which of the following statements correctly reflects the differences between STL and AMF file formats?",
+      options: [
+        "STL files define the geometric outer surface of the model and contain only triangular surfaces, while AMF files include additional information such as internal structure, material type, color, and texture.",
+        "The STL format supports multiple materials and colors, but AMF only prints with a single material.",
+        "STL is an XML-based file format, whereas AMF can be in either ASCII or binary format.",
+        "STL files are generally larger in size because they contain more data, while AMF offers smaller file sizes.",
+        "STL only defines flat surfaces, while AMF can provide more precise and accurate geometry definitions."
+      ],
+      correct: 0
+    },
+    {
+      question: "Which of the following statements correctly explains the effects of the light source characteristics and polymerization speed on additive manufacturing in the photopolymerization process?",
+      options: [
+        "Higher energy light sources used to increase polymerization speed enhance the efficiency of photoinitiators, allowing fully cured structures to be obtained in shorter times, but this may increase the viscosity of the resin, resulting in lower resolution.",
+        "The wavelength of the applied light plays a critical role in the photopolymerization process. However, as the light source power increases, the molecular crosslinking density decreases, weakening the mechanical properties of the polymer.",
+        "The photoinitiator's light-activation reactions are more efficient when the light source wavelength matches the photoinitiator's absorption spectrum. However, higher light intensity can increase the photoinitiator's toxic properties, creating environmental risks.",
+        "Ultraviolet (UV) light sources used to increase polymerization speed activate photoinitiators with shorter wavelengths, but this reduces the resin's crosslinking rate, resulting in less flexible structures.",
+        "In the photopolymerization process, it is critical that the light source wavelength matches the chemical structure of the resin used. High wavelength light sources enable faster and more homogeneous polymerization, but can lead to resin degradation."
+      ],
+      correct: 0
+    },
+    {
+      question: "Which of the following statements correctly explains the powder handling challenges in the Powder Bed Fusion (PBF) process?",
+      options: [
+        "I. Failure to protect the powder from moisture and environmental air leads to clumping, which causes uneven heating during sintering, resulting in poor surface quality.\nII. A non-homogeneous powder mixture causes powders to have different melting rates during sintering, leading to irregular mechanical properties and quality loss in the final product.\nIII. Excessively fine powder particles make it easier for the powder to be carried by air, but this can also make it difficult for the powder to spread evenly, reducing process efficiency.\nIV. Reuse of powder can cause degradation of mechanical properties due to changes in the characteristics of the powder particles after each use.\nV. The excessive temperatures of the devices used during powder handling not only pose a safety risk but also make it difficult to distribute powder particles evenly, lowering process efficiency.",
+        "I, II, III, IV, V",
+        "I, II, III, IV",
+        "II, III, IV, V",
+        "I, III, IV",
+        "II, IV, V"
+      ],
+      correct: 0
+    },
+    {
+      question: "What is the purpose of scaffold structures in tissue engineering?",
+      options: [
+        "To prevent cell growth and stabilize the structure",
+        "To provide sufficient space for cell growth and create strong, highly porous structures",
+        "To make scaffolds aesthetically pleasing",
+        "To provide mechanical support only, without affecting cell growth",
+        "To ensure that only the struts are strong, without considering porosity"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which of the following statements correctly explains the fundamental differences between thermal and piezoelectric Drop-on-Demand (DOD) ejection technologies?",
+      options: [
+        "Thermal DOD uses temperature change to eject liquid, while piezoelectric DOD ejects liquid by applying electrical voltage.",
+        "Thermal DOD only increases liquid flow, while piezoelectric DOD allows for higher resolution.",
+        "Piezoelectric DOD causes the liquid to evaporate faster, while thermal DOD results in slower evaporation.",
+        "Thermal DOD is less costly than piezoelectric DOD because it requires more energy.",
+        "Piezoelectric DOD can only be used for high-temperature applications, while thermal DOD can be used for any temperature."
+      ],
+      correct: 0
+    },
+    {
+      question: "In the Sheet Lamination process shown in the image below, at which step are the material layers bonded together?",
+      options: [
+        "Bonding the layers together",
+        "Laser cutting the layers",
+        "Melting the layers with heat",
+        "Mechanically compressing the layers",
+        "Applying paint to the layers"
+      ],
+      correct: 0
+    },
+    {
+      question: "How do the solidification rate and thermal gradient in Beam Deposition Processes affect the outcome?",
+      options: [
+        "The solidification rate and thermal gradient only affect the material type and do not play an important role in determining the microstructure.",
+        "High solidification rates and large thermal gradients lead to rapid cooling, resulting in non-equilibrium grain structures and microstructures that are not observed in traditional processing methods.",
+        "The solidification rate and thermal gradient only control the temperature distribution, ensuring uniformity of the layers.",
+        "Low solidification rates and small thermal gradients improve the grain structure, allowing for a more homogeneous microstructure.",
+        "The solidification rate and thermal gradient only affect solubility levels and do not influence the microstructure."
+      ],
+      correct: 1
+    },
+    {
+      question: "In material spraying processes using Direct Write Technologies (DWT), how does material storage control affect the outcome?",
+      options: [
+        "Material storage rate and printing temperature only affect surface roughness and do not alter the internal structure.",
+        "Optimizing storage rate and temperature control stabilizes material flow and increases print quality, reducing variability in the final part.",
+        "Controlling material storage and temperature increases viscosity, which improves deposition accuracy.",
+        "The material storage rate has no effect on the final part quality in DWT processes.",
+        "Temperature control has no effect on the material behavior during printing and deposition."
+      ],
+      correct: 1
+    },
+    {
+    question: "Which of the following statements about the STL (Standard Tessellation Language) file format is correct?",
+    options: ["It is a file format that only contains color information.", "It is used to define the surface geometry of a 3D model.", "It is not used in additive manufacturing technologies.", "It is a 2D format composed of vector drawings.", "It provides detailed information about the internal structure of a 3D model."],
+    correct: 1
+},
+{
+    question: "What is the key difference between the Mask Projection Approach and the Vector Scan Approach in photopolymerization?",
+    options: ["The Vector Scan Approach uses a mask to cure the entire layer at once, while the Mask Projection Approach uses a laser to trace the design.", "The Mask Projection Approach cures one layer at a time using a projected image, while the Vector Scan Approach uses a laser to selectively cure specific areas.", "The Mask Projection Approach is slower but more accurate than the Vector Scan Approach.", "The Vector Scan Approach can only be used for transparent materials, while the Mask Projection Approach works for all materials.", "Both approaches function identically but differ in the types of photopolymers used."],
+    correct: 1
+},
+{
+    question: "In the powder bed fusion process, which of the following are necessary characteristics of the particles to ensure proper handling in the delivery system?",
+    options: ["I. The particles should have a consistent size distribution. II. The particles should exhibit good flowability. III. The particles should have low reactivity to prevent unwanted reactions. IV. The particles should be free of moisture. V. The particles should minimize the risk of becoming airborne during handling.", "I, II, and III", "I, II, and IV", "I, II, III, and IV", "I, II, III, IV, and V", "II, III, IV, and V"],
+    correct: 3
+},
+{
+    question: "In extrusion-based systems (e.g., Fused Deposition Modeling - FDM), the extrusion process depends on which of the following factors?",
+    options: ["I. The temperature of the extrusion nozzle. II. The feed rate of the filament. III. The speed of the nozzle movement. IV. The type and viscosity of the material being extruded. V. The diameter of the nozzle opening.", "I, II, and III", "I, II, and IV", "I, II, III, and IV", "I, II, III, IV, and V", "II, III, IV, and V"],
+    correct: 3
+},
+{
+    question: "Compared to other additive manufacturing methods, which of the following is an advantage of material jetting and binder jetting processes?",
+    options: ["They do not require post-processing for final part quality.", "They offer the highest mechanical strength compared to all other methods.", "They allow for multi-material and full-color printing capabilities.", "They are the fastest methods for producing metal parts.", "They require minimal maintenance compared to extrusion-based systems."],
+    correct: 2
+},
+{
+    question: "In sheet lamination processes, the \"bond-then-form\" (BtF) and \"form-then-bond\" (FtB) approaches have distinct characteristics and applications. Which of the following statements about these approaches is INCORRECT?",
+    options: ["The \"bond-then-form\" approach bonds all sheets into a solid stack first and then uses subtractive methods like cutting or milling to shape the part.", "The \"bond-then-form\" approach generally exhibits little shrinkage, residual stress, and distortion problems, making it suitable for high-precision parts.", "The \"form-then-bond\" approach enables the creation of internal features and channels by cutting individual layers before bonding, a capability that is nearly impossible in the \"bond-then-form\" approach.", "The \"bond-then-form\" approach is ideal for applications requiring internal cavities or channels, as it simplifies their fabrication compared to the \"form-then-bond\" approach.", "The \"form-then-bond\" approach is more popular for ceramics and metals because it allows precise cutting and bonding without excessive thermal or mechanical stress."],
+    correct: 3
+},
+{
+    question: "Directed Energy Deposition (DED) and Powder Bed Fusion (PBF) are both additive manufacturing processes that use powders as raw material. Which of the following statements highlights a key difference between these two processes?",
+    options: ["DED can be used to repair existing components or add material to an existing part, while PBF is primarily used for building new parts from scratch.", "PBF is more suitable for large-scale parts because of its ability to work without additional material handling systems, unlike DED.", "DED processes are limited to polymeric materials, whereas PBF can work with metals, ceramics, and polymers.", "In DED, powders are pre-deposited onto a bed and selectively melted, whereas in PBF, the material is directly deposited into the build area and simultaneously melted.", "PBF provides better material density and surface finish compared to DED due to its layer-by-layer powder spreading and precision control."],
+    correct: 0
+},
+{
+    question: "Which additive manufacturing method is most suitable for fabricating electronic circuits, antennas, and sensors directly onto various substrates without the need for masks or molds?",
+    options: ["Powder Bed Fusion (PBF)", "Directed Energy Deposition (DED)", "Direct Write Technologies", "Extrusion-Based Systems", "Binder Jetting"],
+    correct: 2
+},
+{
+    question: "Which of the following motivations are associated with Design for Additive Manufacturing (DfAM)?",
+    options: ["I. Reducing material waste compared to traditional subtractive manufacturing methods. II. Enabling the production of complex geometries, such as lattice structures, that are difficult or impossible to achieve with conventional methods. III. Customizing designs to meet specific user or application requirements. IV. Reducing the number of assembly steps by integrating multiple components into a single part. V. Improving sustainability by optimizing material usage and energy efficiency in manufacturing.", "I, II, and IV", "I, III, and IV", "II, IV, and V", "I, II, III, and IV", "I, II, III, IV, and V"],
+    correct: 4
+},
+{
+    question: "Why is the ability to use multiple materials in additive manufacturing machinery advantageous?",
+    options: ["It allows for the creation of components with varying material properties, such as stiffness and flexibility, in a single build.", "It reduces the overall manufacturing cost by combining low-cost and high-performance materials in different regions of the part.", "It enables the integration of functional elements, such as conductive and insulating materials, in electronic applications.", "It supports the production of parts with improved performance by tailoring material composition for specific loads or conditions.", "All of the above."],
+    correct: 4
+}
+
+  
+
+
+
+
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `
+                    <p><strong>${index + 1}. ${item.question}</strong></p>
+                    <ul class="options">
+                        ${item.options.map((option, i) => `
+                            <li>
+                                <label>
+                                    <input type="radio" name="question${index}" value="${i}"> ${option}
+                                </label>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+
+            quizData.forEach((item, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                if (selectedOption && parseInt(selectedOption.value) === item.correct) {
+                    score++;
+                }
+            });
+
+            document.getElementById('result').textContent = `You scored ${score} out of ${quizData.length}!`;
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
